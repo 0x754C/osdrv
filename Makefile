@@ -104,6 +104,8 @@ export ARCH ?= riscv
 
 .PHONY : prepare clean all
 all: prepare $(KO_LIST) $(OTHERS)
+modules: prepare $(KO_LIST) $(OTHERS)
+modules_install: prepare $(KO_LIST) $(OTHERS)
 
 prepare:
 	@mkdir -p $(INSTALL_DIR)/3rd
