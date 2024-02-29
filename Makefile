@@ -1,8 +1,10 @@
 SHELL=/bin/bash
 -include $(BUILD_PATH)/.config
 #
+CHIP_CODE ?= mars
 export CHIP_CODE := $(shell echo $(CHIP_CODE) | tr A-Z a-z)
 #
+MW_VER ?= v2
 INTERDRV_PATH := interdrv/$(shell echo $(MW_VER))
 
 ifeq ($(KERNEL_DIR), )
@@ -34,7 +36,7 @@ endef
 MAKE_EXT_KO_CP :=
 ifneq (${FLASH_SIZE_SHRINK},y)
 define MAKE_EXT_KO_CP
-	find $(1) -name '*.ko' -print -exec cp {} $(INSTALL_DIR)/3rd/ \;;
+	find $(1) -name '*.ko' -print -exec cp {} $(INSTALL_DIR)/ \;;
 endef
 endif
 
@@ -54,6 +56,8 @@ KO_LIST = base vcodec jpeg pwm rtc wdt tpu mon clock_cooling saradc wiegand wieg
 ifneq ($(CONFIG_USB_OSDRV_CVITEK_GADGET),)
 KO_LIST += usb
 endif
+
+CHIP_ARCH ?= SG200X
 
 ifeq ($(CHIP_ARCH), $(filter $(CHIP_ARCH), CV183X CV182X))
 	KO_LIST += vip
@@ -93,8 +97,10 @@ ifeq (, ${CONFIG_NO_TP})
 	OTHERS += cp_ext_tp
 endif
 
-export CROSS_COMPILE=$(patsubst "%",%,$(CONFIG_CROSS_COMPILE_KERNEL))
-export ARCH=$(patsubst "%",%,$(CONFIG_ARCH))
+export CROSS_COMPILE ?= riscv64-unknown-linux-gnu-
+export ARCH ?= riscv
+#export CROSS_COMPILE=$(patsubst "%",%,$(CONFIG_CROSS_COMPILE_KERNEL))
+#export ARCH=$(patsubst "%",%,$(CONFIG_ARCH))
 
 .PHONY : prepare clean all
 all: prepare $(KO_LIST) $(OTHERS)
