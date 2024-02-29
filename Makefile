@@ -29,7 +29,7 @@ define COPY_KO
 endef
 
 define MAKE_KO
-	( cd $(1) && $(MAKE) KERNEL_DIR=$(KERNEL_DIR) all -j$(shell nproc))
+	( cd $(1) && $(MAKE) KERNEL_DIR=$(KERNEL_DIR) KBUILD_MODPOST_WARN=1 all -j$(shell nproc))
 	$(call COPY_KO, $(1))
 endef
 
