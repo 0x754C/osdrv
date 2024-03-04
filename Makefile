@@ -25,7 +25,7 @@ INTRERDRV_FLAGS += -DDRV_DEBUG -DDRV_TEST
 endif
 
 define COPY_KO
-	( cd $(1) && cp -f *.ko $(INSTALL_DIR); )
+	( cd $(1) && pwd && cp -vf *.ko $(INSTALL_DIR); )
 endef
 
 define MAKE_KO
