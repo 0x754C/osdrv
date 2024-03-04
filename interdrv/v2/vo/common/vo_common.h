@@ -11,6 +11,8 @@ extern u32 vo_log_lv;
 #define _reg_read(addr) readl((void __iomem *)addr)
 #define _reg_write(addr, data) writel(data, (void __iomem *)addr)
 
+#define NODBG
+#ifndef NODBG
 #define vo_pr(level, fmt, arg...) \
 	do { \
 		if (vo_log_lv & level) { \
@@ -26,6 +28,7 @@ extern u32 vo_log_lv;
 				pr_debug("%d:%s(): " fmt, __LINE__, __func__, ## arg); \
 		} \
 	} while (0)
+#endif
 
 enum vo_msg_pri {
 	VO_ERR = 3,

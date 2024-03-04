@@ -43,6 +43,8 @@ extern int vi_dump_reg;
 
 extern u32 vi_log_lv;
 
+#define NDBG
+#ifndef NDBG
 #define vi_pr(level, fmt, arg...) \
 	do { \
 		if (vi_log_lv & level) { \
@@ -58,6 +60,7 @@ extern u32 vi_log_lv;
 				pr_debug("%s:%d(): " fmt, __func__, __LINE__, ## arg); \
 		} \
 	} while (0)
+#endif
 
 enum vi_msg_pri {
 	VI_ERR		= 0x1,
