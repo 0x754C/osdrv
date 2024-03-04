@@ -28,6 +28,9 @@ extern u32 vo_log_lv;
 				pr_debug("%d:%s(): " fmt, __LINE__, __func__, ## arg); \
 		} \
 	} while (0)
+#else
+#define vo_pr(level, fmt, arg...) \
+	do { } while (0)
 #endif
 
 enum vo_msg_pri {

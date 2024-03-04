@@ -20,6 +20,7 @@ $(info ** [ KERNEL_DIR ] ** = $(KERNEL_DIR))
 $(info ** [ INSTALL_DIR ] ** = $(INSTALL_DIR))
 
 export INTRERDRV_FLAGS :=
+INTRERDRV_FLAGS += -Wno-error=unused-variable
 ifeq ($(CONFIG_BUILD_FOR_DEBUG), y)
 INTRERDRV_FLAGS += -DDRV_DEBUG -DDRV_TEST
 endif
