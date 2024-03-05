@@ -1310,13 +1310,15 @@ static int _init_resources(struct platform_device *pdev)
 		reg_base[i] = devm_ioremap_nocache(&pdev->dev, res->start,
 						    res->end - res->start);
 #endif
-		CVI_TRACE_VPSS(CVI_DBG_INFO, "(%d) res-reg: start: 0x%llx, end: 0x%llx, virt-addr(%p).\n",
+		printk("(%d) res-reg: start: 0x%llx, end: 0x%llx, virt-addr(%p).\n",
 			i, res->start, res->end, reg_base[i]);
 		if (!reg_base[i]) {
-			CVI_TRACE_VPSS(CVI_DBG_ERR, "Failed to get reg_base[%d]\n", i);
+			printk(CVI_DBG_ERR, "Failed to get reg_base[%d]\n", i);
 			return -EINVAL;
 		}
 	}
+	printk("sclr_set_base_addr: %x\n", reg_base[0]);
+	printk("dphy_set_base_addr: %x\n", reg_base[1]);
 	sclr_set_base_addr(reg_base[0]);
 	dphy_set_base_addr(reg_base[1]);
 

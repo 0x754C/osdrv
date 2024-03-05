@@ -154,6 +154,8 @@ static int mipi_tx_set_combo_dev_cfg(struct cvi_vip_mipi_tx_dev *tdev, struct co
 	u8 bits;
 	bool preamble_on = false;
 
+	printk("mipi_tx_set_combo_dev_cfg\n");
+
 	ret = mipi_tx_check_comb_dev_cfg(dev_cfg);
 	if (ret < 0) {
 		CVI_VIP_MIPI_TX_ERR("mipi_tx check combo_dev config failed!\n");
@@ -316,24 +318,26 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 	struct cvi_vip_mipi_tx_dev *tdev = file_mipi_tx_dev(file);
 	int rc = 0;
 
+	printk("mipi_tx_ioctl cmd %x arg %lx", cmd, arg);
 	switch (cmd) {
 	case CVI_VIP_MIPI_TX_SET_DEV_CFG: {
 		struct combo_dev_cfg_s stcombo_dev_cfg;
 
 		if (arg == 0) {
-			CVI_VIP_MIPI_TX_ERR("NULL pointer.\n");
+			printk("NULL pointer.\n");
 			rc = -EINVAL;
 			break;
 		}
 		if (copy_from_user(&stcombo_dev_cfg, (void *)arg, sizeof(stcombo_dev_cfg))) {
-			CVI_VIP_MIPI_TX_ERR("copy_from_user failed.\n");
+			printk("copy_from_user failed.\n");
 			rc = -ENOMEM;
 			break;
 		}
 
+		printk("mipi_tx set combo_dev config\n");
 		rc = mipi_tx_set_combo_dev_cfg(tdev, &stcombo_dev_cfg);
 		if (rc < 0)
-			CVI_VIP_MIPI_TX_ERR("mipi_tx set combo_dev config failed!\n");
+			printk("mipi_tx set combo_dev config failed!\n");
 		else
 			tdev->dev_cfg = stcombo_dev_cfg;
 	}
@@ -343,18 +347,19 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 		struct combo_dev_cfg_s stcombo_dev_cfg;
 
 		if (arg == 0) {
-			CVI_VIP_MIPI_TX_ERR("NULL pointer.\n");
+			printk("NULL pointer.\n");
 			rc = -EINVAL;
 			break;
 		}
 
+		printk("mipi_tx get combo_dev config\n");
 		memset(&stcombo_dev_cfg, 0, sizeof(stcombo_dev_cfg));
 		rc = mipi_tx_get_combo_dev_cfg(&stcombo_dev_cfg);
 		if (rc < 0)
-			CVI_VIP_MIPI_TX_ERR("mipi_tx get combo_dev config failed!\n");
+			printk("mipi_tx get combo_dev config failed!\n");
 
 		if (copy_to_user((void *)arg, &stcombo_dev_cfg, sizeof(stcombo_dev_cfg))) {
-			CVI_VIP_MIPI_TX_ERR("copy_to_user failed.\n");
+			printk("copy_to_user failed.\n");
 			rc = -ENOMEM;
 			break;
 		}
@@ -365,26 +370,27 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 		struct cmd_info_s cmd_info;
 
 		if (arg == 0) {
-			CVI_VIP_MIPI_TX_ERR("NULL pointer.\n");
+			printk("NULL pointer.\n");
 			rc = -EINVAL;
 			break;
 		}
 		if (copy_from_user(&cmd_info, (void *)arg, sizeof(cmd_info))) {
-			CVI_VIP_MIPI_TX_ERR("copy_from_user failed.\n");
+			printk("copy_from_user failed.\n");
 			rc = -ENOMEM;
 			break;
 		}
 		if (cmd_info.cmd_size == 0) {
-			CVI_VIP_MIPI_TX_ERR("cmd_size zero.\n");
+			printk("cmd_size zero.\n");
 			rc = -EINVAL;
 			break;
 		}
+		printk("mipi_tx set cmd\n");
 
 		// if cmd is NULL, use cmd_size as cmd.
 		if (cmd_info.cmd == NULL) {
 			cmd_info.cmd = kmalloc(2, GFP_KERNEL);
 			if (cmd_info.cmd == NULL) {
-				CVI_VIP_MIPI_TX_ERR("kmalloc failed.\n");
+				printk("kmalloc failed.\n");
 				rc = -ENOMEM;
 				break;
 			}
@@ -395,13 +401,13 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 			unsigned char *tmp_cmd = kmalloc(cmd_info.cmd_size, GFP_KERNEL);
 
 			if (tmp_cmd == NULL) {
-				CVI_VIP_MIPI_TX_ERR("kmalloc failed.\n");
+				printk("kmalloc failed.\n");
 				rc = -ENOMEM;
 				break;
 			}
 
 			if (copy_from_user(tmp_cmd, (void __user *)cmd_info.cmd, cmd_info.cmd_size)) {
-				CVI_VIP_MIPI_TX_ERR("cmd copy_from_user failed.\n");
+				printk("cmd copy_from_user failed.\n");
 				kfree(cmd_info.cmd);
 				rc = -ENOMEM;
 				break;
@@ -411,7 +417,7 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 
 		rc = mipi_tx_set_cmd(&cmd_info);
 		if (rc < 0)
-			CVI_VIP_MIPI_TX_ERR("mipi_tx set cmd failed!\n");
+			printk("mipi_tx set cmd failed!\n");
 		kfree(cmd_info.cmd);
 	}
 	break;
@@ -420,22 +426,23 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 		struct get_cmd_info_s get_cmd_info, get_cmd_info_tmp;
 
 		if (arg == 0) {
-			CVI_VIP_MIPI_TX_ERR("NULL pointer.\n");
+			printk("NULL pointer.\n");
 			rc = -EINVAL;
 			break;
 		}
 		if (copy_from_user(&get_cmd_info, (void *)arg, sizeof(get_cmd_info))) {
-			CVI_VIP_MIPI_TX_ERR("copy_from_user failed.\n");
+			printk("copy_from_user failed.\n");
 			rc = -ENOMEM;
 			break;
 		}
+		printk("mipi_tx get cmd\n");
 
 		memcpy(&get_cmd_info_tmp, &get_cmd_info, sizeof(get_cmd_info));
 		// get_cmd_info.get_data is ptr from user space
 		// it cannot be used directly in driver in riscv
 		get_cmd_info.get_data = kmalloc(get_cmd_info.get_data_size, GFP_KERNEL);
 		if (get_cmd_info.get_data == NULL) {
-			CVI_VIP_MIPI_TX_ERR("kmalloc failed.\n");
+			printk("kmalloc failed.\n");
 			rc = -ENOMEM;
 			break;
 		}
@@ -443,13 +450,13 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 		rc = mipi_tx_get_cmd(&get_cmd_info);
 		if (rc < 0) {
 			kfree(get_cmd_info.get_data);
-			CVI_VIP_MIPI_TX_ERR("mipi_tx get cmd failed!\n");
+			printk("mipi_tx get cmd failed!\n");
 			break;
 		}
 
 		if (copy_to_user((void *)get_cmd_info_tmp.get_data, get_cmd_info.get_data,
 			get_cmd_info.get_data_size)) {
-			CVI_VIP_MIPI_TX_ERR("copy_to_user failed.\n");
+			printk("copy_to_user failed.\n");
 			rc = -ENOMEM;
 		}
 
@@ -458,10 +465,12 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 	break;
 
 	case CVI_VIP_MIPI_TX_ENABLE:
+		printk("mipi_tx en\n");
 		mipi_tx_enable();
 	break;
 
 	case CVI_VIP_MIPI_TX_DISABLE:
+		printk("mipi_tx dis\n");
 		mipi_tx_disable();
 	break;
 
@@ -469,16 +478,16 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 		struct hs_settle_s settle_cfg;
 
 		if (arg == 0) {
-			CVI_VIP_MIPI_TX_ERR("NULL pointer.\n");
+			printk("NULL pointer.\n");
 			rc = -EINVAL;
 			break;
 		}
 		if (copy_from_user(&settle_cfg, (void *)arg, sizeof(settle_cfg))) {
-			CVI_VIP_MIPI_TX_ERR("copy_from_user failed.\n");
+			printk("copy_from_user failed.\n");
 			rc = -ENOMEM;
 			break;
 		}
-		CVI_VIP_MIPI_TX_INFO("Set hs settle: prepare(%d) zero(%d) trail(%d)\n",
+		printk("Set hs settle: prepare(%d) zero(%d) trail(%d)\n",
 				     settle_cfg.prepare, settle_cfg.zero, settle_cfg.trail);
 		dphy_set_hs_settle(settle_cfg.prepare, settle_cfg.zero, settle_cfg.trail);
 	}
@@ -488,15 +497,15 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 		struct hs_settle_s settle_cfg;
 
 		if (arg == 0) {
-			CVI_VIP_MIPI_TX_ERR("NULL pointer.\n");
+			printk("NULL pointer.\n");
 			rc = -EINVAL;
 			break;
 		}
 		dphy_get_hs_settle(&settle_cfg.prepare, &settle_cfg.zero, &settle_cfg.trail);
-		CVI_VIP_MIPI_TX_INFO("Get hs settle: prepare(%d) zero(%d) trail(%d)\n",
+		printk("Get hs settle: prepare(%d) zero(%d) trail(%d)\n",
 				     settle_cfg.prepare, settle_cfg.zero, settle_cfg.trail);
 		if (copy_to_user((void *)arg, &settle_cfg, sizeof(settle_cfg))) {
-			CVI_VIP_MIPI_TX_ERR("copy_to_user failed.\n");
+			printk("copy_to_user failed.\n");
 			rc = -ENOMEM;
 			break;
 		}
@@ -504,7 +513,7 @@ static long mipi_tx_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 	break;
 
 	default: {
-		CVI_VIP_MIPI_TX_ERR("invalid mipi_tx ioctl cmd\n");
+		printk("invalid mipi_tx ioctl cmd\n");
 		rc = -EINVAL;
 	}
 	break;

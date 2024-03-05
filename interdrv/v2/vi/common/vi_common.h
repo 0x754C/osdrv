@@ -43,7 +43,7 @@ extern int vi_dump_reg;
 
 extern u32 vi_log_lv;
 
-#define NODBG
+//#define NODBG
 #ifndef NODBG
 #define vi_pr(level, fmt, arg...) \
 	do { \
@@ -62,7 +62,11 @@ extern u32 vi_log_lv;
 	} while (0)
 #else
 #define vi_pr(level, fmt, arg...) \
-	do { } while (0)
+	do { \
+	    if (0 == 1) { \
+		    pr_err(fmt, ## arg); \
+	    } \
+	} while (0)
 #endif
 
 enum vi_msg_pri {

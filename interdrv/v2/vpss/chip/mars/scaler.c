@@ -696,6 +696,7 @@ int scl_coef_lp[128][4] = {
  ****************************************************************************/
 void sclr_set_base_addr(void *base)
 {
+	printk("base = %x\n", (uintptr_t)base);
 	reg_base = (uintptr_t)base;
 }
 EXPORT_SYMBOL_GPL(sclr_set_base_addr);
@@ -3166,6 +3167,7 @@ void sclr_disp_set_timing(struct sclr_disp_timing *timing)
 {
 	u32 tmp = 0;
 	bool is_enable = sclr_disp_tgen_enable(false);
+	printk("sclr_disp_set_timing, reg_base: %08x\n");
 
 	if (timing->vsync_pol)
 		tmp |= 0x20;
